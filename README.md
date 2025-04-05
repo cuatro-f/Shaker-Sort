@@ -1,7 +1,7 @@
 
 # Shaker sort
 
-implementation of shaker sort in NASM. Sorting is applied to a matrix. The matrix is ​​sorted by the maximum numbers in the row.
+implementation of shaker sort in NASM. Sorting is applied to a matrix. The matrix is ​​sorted by the maximum numbers in the row. Designed to run on Linux OS.
 
 
 Also, via the parameter during assembly, you can select the sorting direction (ascending/descending)
