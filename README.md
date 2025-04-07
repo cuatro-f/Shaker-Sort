@@ -18,7 +18,7 @@ To deploy this project run
 There is also an equivalent action
 
 ```bash
-  make sortorder=asc
+  make SORT_ORDER=asc
 ```
 
 As a result, a program with ascending sorting will be compiled.
@@ -26,5 +26,5 @@ As a result, a program with ascending sorting will be compiled.
 You can also choose to sort in descending order.
 
 ```bash
-  make sortorder=desc
+  make SORT_ORDER=desc
 ```
