@@ -11,8 +11,8 @@ row4 dw 32, 2424, 54, 4325
 row5 dw 453, 53, 25353, 534
 matrix dq row1, row2, row3, row4, row5
 tops times rows dw 0
-tmp dw 0 
-tmp_address dq 0 
+tmp dw 0
+tmp_address dq 0
 
 temp_buffer times rows*cols dw 0     ; buffer for initial data
 original_rows dq row1, row2, row3, row4, row5 ; initial rows addresses
@@ -73,14 +73,18 @@ shaker_sort:
     mov r13, 0
 
 first_loop:
-    mov esi, r13d 
-    mov ebx, 0 
+    mov esi, r13d
+    mov ebx, 0
 
 forward:
     mov ax, [tops + esi * 2]
     mov dx, [tops + (esi + 1) * 2]
     cmp ax, dx
-    jle no_swap 
+    %ifdef SORT_ORDER_ASC
+      jle no_swap
+    %else
+      jge no_swap
+    %endif
     mov [tmp], ax
     mov [tops + esi * 2], dx
     mov dx, [tmp]
@@ -91,23 +95,27 @@ forward:
     mov [matrix + esi * 8], r15
     mov r15, [tmp_address]
     mov [matrix + (esi + 1) * 8], r15
-    inc ebx 
+    inc ebx
 
 no_swap:
-    inc esi 
-    cmp esi, ecx 
-    jl forward 
-    dec ecx 
+    inc esi
+    cmp esi, ecx
+    jl forward
+    dec ecx
     cmp ebx, 0
-    je sorted 
-    mov esi, ecx 
-    mov ebx, 0 
+    je sorted
+    mov esi, ecx
+    mov ebx, 0
 
 backward:
     mov ax, [tops + esi * 2]
     mov dx, [tops + (esi - 1) * 2]
     cmp dx, ax
-    jle no_swap_back 
+    %ifdef SORT_ORDER_ASC
+      jle no_swap_back
+    %else
+      jge no_swap_back
+    %endif
     mov [tmp], ax
     mov [tops + esi * 2], dx
     mov dx, [tmp]
@@ -120,7 +128,7 @@ backward:
     mov [matrix + (esi - 1) * 8], r15
 
 no_swap_back:
-    dec esi 
+    dec esi
     cmp esi, r13d
     jg backward
     inc r13d
@@ -133,7 +141,7 @@ sorted:
 
 restore_loop:
     mov rax, [matrix + rbx*8]   ; row address after sort
-    xor r8, r8 ; index for search in original_rows 
+    xor r8, r8 ; index for search in original_rows
 
 search_k:
     cmp r8, rows ; less than array size
@@ -149,15 +157,15 @@ found_k:
     mov rax, r8 ; address
     imul rax, cols*2
     lea rsi, [temp_buffer + rax] ; address in buffer
-    mov rdi, [original_rows + rbx*8] ; address to paste copied 
+    mov rdi, [original_rows + rbx*8] ; address to paste copied
     mov rcx, cols ; counter for rep
-    rep movsw 
+    rep movsw
 
     inc rbx
     cmp rbx, rows
     jl restore_loop
 
-    ; succesful ending 
+    ; succesful ending
     mov rax, 60
     mov rdi, 0
     syscall
